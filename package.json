@@ -1,0 +1,11 @@
+{
+  "name": "filemanager",
+  "version": "1.0.0",
+  "description": "Filemanager with Node.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/parent.js"
+  },
+  "author": "Ilia Domyshev",
+  "license": "ISC"
+}
