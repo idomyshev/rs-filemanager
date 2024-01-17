@@ -1,4 +1,7 @@
 import {homedir} from "os";
+import {lang} from "../settings/lang.js";
+import {cp} from "fs/promises";
+import {commandConfig} from "../settings/commandConfig.js";
 
 export class FileManager {
   dir;
@@ -8,43 +11,69 @@ export class FileManager {
     this.dir = homedir;
   }
 
-  async copy() {
-    const sourceDirPath = `${this.dir}/files`;
-    const targetDirPath = `${this.dir}/files_copy`;
+  async cp(file1, file2) {
+    const sourceDirPath = `${this.dir}/${file1}`;
+    const targetDirPath = `${this.dir}/${file2}`;
 
     try {
-      await fs.cp(sourceDirPath, targetDirPath, {
+      await cp(sourceDirPath, targetDirPath, {
         recursive: true,
         force: false,
         errorOnExist: true,
       });
     } catch (err) {
-      if (["ENOENT", "ERR_FS_CP_EEXIST"].includes(err?.code)) {
-        throw new Error(fsErrorText);
-      }
+      throw new Error;
     }
   }
 
-  processCommand(inputString) {
-    const parts = inputString.split(" ").filter((item) => item.trim())
+  async processCommand(inputString) {
+    const args = inputString.split(" ").filter((item) => item.trim())
 
-    const command = parts[0];
-    const argsNumber = parts.length > 0 ? parts.length - 1 : 0;
+    const commandName = args[0];
 
-    if (command === ".exit" && !argsNumber) {
-      process.exit(0);
+    if (!commandName) {
+      this.printDir();
+      return;
     }
 
-    if (command === "cp" && argsNumber)
+    args.shift();
 
-      this.printdir();
+    const config = commandConfig[commandName];
+
+    if (!config || config.argsNumber !== args.length) {
+      this.invalidInput();
+      return;
+    }
+
+    switch (commandName) {
+      case ".exit":
+        process.exit(0);
+        break;
+      default:
+        try {
+          await this[commandName](...args);
+        } catch (err) {
+          this.operationFailed();
+        }
+    }
+
+    this.printDir();
   }
 
-  printdir() {
-    console.log(`You are currently in ${this.dir}`);
+  printDir() {
+    console.log(`\n\x1b[97mYou are currently in ${this.dir}\x1b[0m\n`);
   }
 
-  printGoodbye = () => {
+  printGoodbye() {
     console.log(`Thank you for using File Manager, ${this.username}, goodbye!\n`);
   };
+
+  invalidInput() {
+    console.log(`\n\x1b[91m${lang.invalidInput} \x1b[0m`);
+    this.printDir();
+  }
+
+  operationFailed() {
+    console.log(`\n\x1b[91m${lang.operationFailed} \x1b[0m`);
+  }
 }

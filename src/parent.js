@@ -29,7 +29,7 @@ if (!arg) {
   const username = arg[1];
 
   // TODO Try to not use child process
-  console.log(`Welcome to the File Manager, ${username}!\n`);
+  console.log(`\x1b[33mWelcome to the File Manager, ${username}!\x1b[0m \n`);
 
   console.log(`You are currently in ${homedir}`);
 
