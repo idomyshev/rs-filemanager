@@ -1,6 +1,7 @@
 import {fork} from "child_process";
 import {homedir} from "os";
 import {getCurrentDirPath} from "./utils/files.js";
+import {printText} from "./utils/colors.js";
 
 const spawnChildProcess = async (args) => {
   const dirPath = getCurrentDirPath(import.meta.url);
@@ -29,9 +30,9 @@ if (!arg) {
   const username = arg[1];
 
   // TODO Try to not use child process
-  console.log(`\x1b[33mWelcome to the File Manager, ${username}!\x1b[0m \n`);
+  printText(`Welcome to the File Manager, ${username}!\n`, "yellow");
 
-  console.log(`You are currently in ${homedir}`);
+  printText(`You are currently in ${homedir}`, "white");
 
-  spawnChildProcess([username]);
+  await spawnChildProcess([username]);
 }

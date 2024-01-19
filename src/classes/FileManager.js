@@ -9,8 +9,9 @@ export class FileManager {
   username;
 
   constructor() {
-    this.homeDir = homedir();
-    this.dir = homedir();
+    const path = homedir();
+    this.homeDir = path;
+    this.dir = path;
   }
 
   async processCommand(inputString) {

@@ -48,15 +48,29 @@ export class Operations extends FileManager {
   }
 
   async up() {
-    const path = this.homeDir;
-    const parts = path.split(SEPARATOR);
-    parts.pop();
-    const newPath = parts.join(SEPARATOR);
+    const path = this.dir;
+    const isWindows = SEPARATOR !== "/";
+    
+    const pathSplit = path.split(SEPARATOR);
 
-    if (!newPath.startsWith(path)) {
+    if (isWindows) {
+      // Next if: Check the case when we are in root folder (i.e. C:\, D:\, etc)
+      if (pathSplit.length === 1) {
+        return;
+      }
+
+      pathSplit.pop();
+      this.dir = pathSplit.length > 1 ? pathSplit.join(SEPARATOR) : `${pathSplit[0]}${SEPARATOR}`;
       return;
     }
 
-    this.dir = newPath;
+    // Below is Linux case.
+    if (path === SEPARATOR) {
+      return;
+    }
+
+    pathSplit.pop();
+    pathSplit.shift();
+    this.dir = `${SEPARATOR}${pathSplit.join(SEPARATOR)}`;
   }
 }
