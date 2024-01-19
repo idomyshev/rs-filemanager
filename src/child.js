@@ -1,15 +1,15 @@
-import {FileManager} from "./classes/FileManager.js";
+import {Operations} from "./classes/Operations.js";
 
 const args = process.argv.slice(2);
 
 const username = args[0];
 
-const fileManager = new FileManager();
+const operations = new Operations();
 
 const onInputData = async (chunk) => {
   const command = chunk.toString().trim();
 
-  await fileManager.processCommand(command);
+  await operations.processCommand(command);
 };
 
 process.stdin.on("data", await onInputData);

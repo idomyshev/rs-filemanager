@@ -1,7 +1,7 @@
 import {homedir} from "os";
 import {lang} from "../settings/lang.js";
-import {cp} from "fs/promises";
 import {commandConfig} from "../settings/commandConfig.js";
+import {printText} from "../utils/colors.js";
 
 export class FileManager {
   dir;
@@ -9,21 +9,6 @@ export class FileManager {
 
   constructor() {
     this.dir = homedir;
-  }
-
-  async cp(file1, file2) {
-    const sourceDirPath = `${this.dir}/${file1}`;
-    const targetDirPath = `${this.dir}/${file2}`;
-
-    try {
-      await cp(sourceDirPath, targetDirPath, {
-        recursive: true,
-        force: false,
-        errorOnExist: true,
-      });
-    } catch (err) {
-      throw new Error;
-    }
   }
 
   async processCommand(inputString) {
@@ -53,6 +38,8 @@ export class FileManager {
         try {
           await this[commandName](...args);
         } catch (err) {
+          // TODO Delete console.log.
+          console.log(err);
           this.operationFailed();
         }
     }
@@ -61,7 +48,7 @@ export class FileManager {
   }
 
   printDir() {
-    console.log(`\n\x1b[97mYou are currently in ${this.dir}\x1b[0m\n`);
+    printText(`You are currently in ${this.dir}`, "white");
   }
 
   printGoodbye() {
@@ -69,11 +56,11 @@ export class FileManager {
   };
 
   invalidInput() {
-    console.log(`\n\x1b[91m${lang.invalidInput} \x1b[0m`);
+    printText(lang.invalidInput, "red");
     this.printDir();
   }
 
   operationFailed() {
-    console.log(`\n\x1b[91m${lang.operationFailed} \x1b[0m`);
+    printText(lang.operationFailed, "red");
   }
 }
