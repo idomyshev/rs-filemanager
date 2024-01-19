@@ -7,5 +7,8 @@ export const commandConfig = {
   },
   add: {
     argsNumber: 1
+  },
+  up: {
+    argsNumber: 0
   }
 }

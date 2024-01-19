@@ -1,6 +1,7 @@
 import {FileManager} from "./FileManager.js";
 import {open, stat} from "fs/promises";
 import {createReadStream, createWriteStream} from "fs";
+import {SEPARATOR} from "../settings/filesystem.js";
 
 function handleError(e) {
   throw e;
@@ -44,5 +45,18 @@ export class Operations extends FileManager {
     } catch (err) {
       throw new Error;
     }
+  }
+
+  async up() {
+    const path = this.homeDir;
+    const parts = path.split(SEPARATOR);
+    parts.pop();
+    const newPath = parts.join(SEPARATOR);
+
+    if (!newPath.startsWith(path)) {
+      return;
+    }
+
+    this.dir = newPath;
   }
 }

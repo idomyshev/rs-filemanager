@@ -5,10 +5,12 @@ import {printText} from "../utils/colors.js";
 
 export class FileManager {
   dir;
+  homeDir;
   username;
 
   constructor() {
-    this.dir = homedir;
+    this.homeDir = homedir();
+    this.dir = homedir();
   }
 
   async processCommand(inputString) {
