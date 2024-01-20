@@ -1,14 +1,17 @@
 export const commandConfig = {
   ".exit": {
-    argsNumber: 0
+    argsNumber: 0,
   },
   cp: {
-    argsNumber: 2
+    argsNumber: 2,
   },
   add: {
-    argsNumber: 1
+    argsNumber: 1,
   },
   up: {
-    argsNumber: 0
-  }
-}
+    argsNumber: 0,
+  },
+  cd: {
+    argsNumber: 1,
+  },
+};

@@ -1,16 +1,14 @@
-import {FileManager} from "./FileManager.js";
-import {open, stat} from "fs/promises";
-import {createReadStream, createWriteStream} from "fs";
-import {SEPARATOR} from "../settings/filesystem.js";
+import { FileManager } from "./FileManager.js";
+import { open, stat } from "fs/promises";
+import { createReadStream, createWriteStream } from "fs";
+import { SEPARATOR } from "../settings/filesystem.js";
 
 function handleError(e) {
   throw e;
 }
 
-
 export class Operations extends FileManager {
   async cp(file1, file2) {
-
     const sourceFilePath = `${this.dir}/${file1}`;
     const targetFilePath = `${this.dir}/${file2}`;
 
@@ -36,21 +34,22 @@ export class Operations extends FileManager {
   }
 
   async add(file1) {
-    const targetPath = `${this.dir}/${file1}`;
-
+    const targetFilePath = `${this.dir}/${file1}`;
 
     try {
-      const file = await open(targetPath, "wx");
+      const file = await open(targetFilePath, "wx");
       file.close();
     } catch (err) {
-      throw new Error;
+      throw new Error(`Cannot open file ${targetFilePath}`);
     }
   }
 
   async up() {
     const path = this.dir;
+
+    // TODO Improve it: on Windows / and \ is possible, probably?
     const isWindows = SEPARATOR !== "/";
-    
+
     const pathSplit = path.split(SEPARATOR);
 
     if (isWindows) {
@@ -60,7 +59,10 @@ export class Operations extends FileManager {
       }
 
       pathSplit.pop();
-      this.dir = pathSplit.length > 1 ? pathSplit.join(SEPARATOR) : `${pathSplit[0]}${SEPARATOR}`;
+      this.dir =
+        pathSplit.length > 1
+          ? pathSplit.join(SEPARATOR)
+          : `${pathSplit[0]}${SEPARATOR}`;
       return;
     }
 
@@ -72,5 +74,26 @@ export class Operations extends FileManager {
     pathSplit.pop();
     pathSplit.shift();
     this.dir = `${SEPARATOR}${pathSplit.join(SEPARATOR)}`;
+  }
+
+  async cd(path) {
+    // TODO Improve it: on Windows / and \ is possible, probably?
+    const isWindowsAbsolutePath =
+      path.search(/^[a-zA-Z]+:\\/g) > -1 && SEPARATOR !== "/";
+
+    const isLinuxAbsolutePath = SEPARATOR === "/" && path.startsWith(SEPARATOR);
+
+    // Add path to the current if path is not absolute.
+    if (!isLinuxAbsolutePath && !isWindowsAbsolutePath) {
+      path = `${this.dir}${SEPARATOR}${path}`;
+    }
+
+    const res = await stat(path);
+
+    if (!res.isDirectory()) {
+      throw new Error("Given path is not a directory");
+    }
+
+    this.dir = path.replace(/\/+$/g, "");
   }
 }

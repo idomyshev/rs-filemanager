@@ -1,7 +1,7 @@
-import {homedir} from "os";
-import {lang} from "../settings/lang.js";
-import {commandConfig} from "../settings/commandConfig.js";
-import {printText} from "../utils/colors.js";
+import { homedir } from "os";
+import { lang } from "../settings/lang.js";
+import { commandConfig } from "../settings/commandConfig.js";
+import { printText } from "../utils/colors.js";
 
 export class FileManager {
   dir;
@@ -15,7 +15,7 @@ export class FileManager {
   }
 
   async processCommand(inputString) {
-    const args = inputString.split(" ").filter((item) => item.trim())
+    const args = inputString.split(" ").filter((item) => item.trim());
 
     const commandName = args[0];
 
@@ -55,8 +55,10 @@ export class FileManager {
   }
 
   printGoodbye() {
-    console.log(`Thank you for using File Manager, ${this.username}, goodbye!\n`);
-  };
+    console.log(
+      `Thank you for using File Manager, ${this.username}, goodbye!\n`
+    );
+  }
 
   invalidInput() {
     printText(lang.invalidInput, "red");
