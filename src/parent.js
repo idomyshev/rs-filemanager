@@ -1,7 +1,7 @@
-import {fork} from "child_process";
-import {homedir} from "os";
-import {getCurrentDirPath} from "./utils/files.js";
-import {printText} from "./utils/colors.js";
+import { fork } from "child_process";
+import { homedir } from "os";
+import { getCurrentDirPath } from "./utils/files.js";
+import { printText } from "./utils/texts.js";
 
 const spawnChildProcess = async (args) => {
   const dirPath = getCurrentDirPath(import.meta.url);

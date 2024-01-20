@@ -1,7 +1,7 @@
 import { homedir } from "os";
 import { lang } from "../settings/lang.js";
 import { commandConfig } from "../settings/commandConfig.js";
-import { printText } from "../utils/colors.js";
+import { printText } from "../utils/texts.js";
 
 export class FileManager {
   dir;

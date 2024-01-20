@@ -1,7 +1,10 @@
 import { FileManager } from "./FileManager.js";
-import { open, stat } from "fs/promises";
+import { open, stat, readdir } from "fs/promises";
 import { createReadStream, createWriteStream } from "fs";
 import { SEPARATOR } from "../settings/filesystem.js";
+import { printTable } from "../utils/tables.js";
+import { tableColumns } from "../settings/table.js";
+import { printText } from "../utils/texts.js";
 
 function handleError(e) {
   throw e;
@@ -95,5 +98,58 @@ export class Operations extends FileManager {
     }
 
     this.dir = path.replace(/\/+$/g, "");
+  }
+
+  async ls() {
+    try {
+      const files = [];
+      const dirs = [];
+      const tableData = [];
+
+      const allFiles = await readdir(this.dir);
+
+      const addTableRow = (index, fileName, isDir) => {
+        const item = {
+          index,
+          fileName,
+          fileType: isDir ? "directory" : "file",
+        };
+
+        tableData.push(item);
+      };
+
+      for (const fileName of allFiles) {
+        const filePath = `${this.dir}${SEPARATOR}${fileName}`;
+        const isDir = (await stat(filePath)).isDirectory();
+
+        if (isDir) {
+          dirs.push(fileName);
+        } else {
+          files.push(fileName);
+        }
+      }
+
+      dirs.sort();
+      files.sort();
+
+      dirs.forEach((fileName, index) => {
+        addTableRow(index, fileName, true);
+      });
+
+      files.forEach((fileName, index) => {
+        addTableRow(index + dirs.length, fileName, false);
+      });
+
+      // Print empty line.
+      console.log();
+
+      // Print table.
+      printTable(tableColumns, tableData);
+
+      // Print empty line.
+      console.log();
+    } catch (e) {
+      throw new Error("Cannot read dir or stat the file");
+    }
   }
 }

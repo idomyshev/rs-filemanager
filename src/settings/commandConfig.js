@@ -14,4 +14,7 @@ export const commandConfig = {
   cd: {
     argsNumber: 1,
   },
+  ls: {
+    argsNumber: 0,
+  },
 };
