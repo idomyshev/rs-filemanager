@@ -44,10 +44,10 @@ export class FileManager {
           // TODO Delete console.log.
           console.log(err);
           this.operationFailed();
+        } finally {
+          this.printDir();
         }
     }
-
-    this.printDir();
   }
 
   printDir() {
@@ -55,9 +55,7 @@ export class FileManager {
   }
 
   printGoodbye() {
-    console.log(
-      `Thank you for using File Manager, ${this.username}, goodbye!\n`
-    );
+    printText(`Thank you for using File Manager, ${this.username}, goodbye!\n`);
   }
 
   invalidInput() {

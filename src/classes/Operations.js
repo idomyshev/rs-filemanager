@@ -4,11 +4,7 @@ import { createReadStream, createWriteStream } from "fs";
 import { SEPARATOR } from "../settings/filesystem.js";
 import { printTable } from "../utils/tables.js";
 import { tableColumns } from "../settings/table.js";
-import { printText } from "../utils/texts.js";
-
-function handleError(e) {
-  throw e;
-}
+import { colorizeText } from "../utils/texts.js";
 
 export class Operations extends FileManager {
   async cp(file1, file2) {
@@ -27,7 +23,7 @@ export class Operations extends FileManager {
     }
 
     if (targetFileExist) {
-      throw new Error("TARGET EXISTS");
+      throw new Error("Target file already exists");
     }
 
     const readStream = createReadStream(sourceFilePath);
@@ -151,5 +147,27 @@ export class Operations extends FileManager {
     } catch (e) {
       throw new Error("Cannot read dir or stat the file");
     }
+  }
+
+  async cat(file1) {
+    const sourceFilePath = `${this.dir}/${file1}`;
+
+    await stat(sourceFilePath);
+
+    let summaryData = [];
+
+    const result = await new Promise((resolve) => {
+      createReadStream(sourceFilePath)
+        .on("data", (data) => {
+          summaryData.push(data);
+        })
+        .on("end", () => {
+          resolve(summaryData);
+        });
+    });
+
+    const resultString = colorizeText(result.toString("utf8"), "yellow");
+
+    process.stdout.write(`\n${resultString}\n\n`);
   }
 }

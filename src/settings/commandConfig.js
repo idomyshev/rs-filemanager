@@ -17,4 +17,7 @@ export const commandConfig = {
   ls: {
     argsNumber: 0,
   },
+  cat: {
+    argsNumber: 1,
+  },
 };

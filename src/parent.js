@@ -1,14 +1,14 @@
-import { fork } from "child_process";
 import { homedir } from "os";
-import { getCurrentDirPath } from "./utils/files.js";
 import { printText } from "./utils/texts.js";
+import { lang } from "./settings/lang.js";
+import { Operations } from "./classes/Operations.js";
 
-const spawnChildProcess = async (args) => {
-  const dirPath = getCurrentDirPath(import.meta.url);
+const operations = new Operations();
 
-  const childFile = `${dirPath}/child.js`;
+const onInputData = async (chunk) => {
+  const command = chunk.toString().trim();
 
-  fork(childFile, args);
+  await operations.processCommand(command);
 };
 
 const args = process.argv.slice(2);
@@ -22,17 +22,18 @@ args.forEach((arg) => {
   }
 });
 
-const arg = argsArray.find((item) => item[0] === "username");
+const userArg = argsArray.find((item) => item[0] === "username");
 
-if (!arg) {
-  console.log("Error: user not specified");
+if (!userArg) {
+  // TODO Check when this text appear.
+  printText(lang.invalidInput, "red");
 } else {
-  const username = arg[1];
+  const username = userArg[1];
 
   // TODO Try to not use child process
   printText(`Welcome to the File Manager, ${username}!\n`, "yellow");
 
   printText(`You are currently in ${homedir}`, "white");
 
-  await spawnChildProcess([username]);
+  process.stdin.on("data", await onInputData);
 }
