@@ -1,5 +1,5 @@
 import { FileManager } from "./FileManager.js";
-import { open, stat, readdir } from "fs/promises";
+import { open, stat, readdir, rename } from "fs/promises";
 import { createReadStream, createWriteStream } from "fs";
 import { SEPARATOR } from "../settings/filesystem.js";
 import { printTable } from "../utils/tables.js";
@@ -169,5 +169,25 @@ export class Operations extends FileManager {
     const resultString = colorizeText(result.toString("utf8"), "yellow");
 
     process.stdout.write(`\n${resultString}\n\n`);
+  }
+
+  async rn(sourceFilePath, targetFilePath) {
+    let targetFileExist = false;
+
+    try {
+      targetFileExist = await stat(`${this.dir}/${targetFilePath}`);
+      targetFileExist = true;
+    } catch (err) {
+      // It's correct that we do nothing here.
+    }
+
+    if (targetFileExist) {
+      throw new Error("Target file already exists");
+    }
+
+    await rename(
+      `${this.dir}/${sourceFilePath}`,
+      `${this.dir}/${targetFilePath}`
+    );
   }
 }

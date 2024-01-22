@@ -20,4 +20,7 @@ export const commandConfig = {
   cat: {
     argsNumber: 1,
   },
+  rn: {
+    argsNumber: 2,
+  },
 };
