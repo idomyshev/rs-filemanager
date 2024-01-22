@@ -1,10 +1,13 @@
 import { FileManager } from "./FileManager.js";
-import { open, stat, readdir, rename, unlink } from "fs/promises";
+import { open, stat, readdir, rename, unlink, readFile } from "fs/promises";
 import { createReadStream, createWriteStream } from "fs";
+import { homedir, EOL, cpus, userInfo, arch } from "os";
+import crypto from "crypto";
+
 import { SEPARATOR } from "../settings/filesystem.js";
 import { printTable } from "../utils/tables.js";
 import { tableColumns } from "../settings/table.js";
-import { colorizeText } from "../utils/texts.js";
+import { colorizeText, printText } from "../utils/texts.js";
 
 export class Operations extends FileManager {
   async cp(file1, file2) {
@@ -194,8 +197,52 @@ export class Operations extends FileManager {
   async rm(absoluteOrRelativeFilePath) {
     // TODO Use method instead.
     const absoluteFilePath = `${this.dir}${SEPARATOR}${absoluteOrRelativeFilePath}`;
-    console.log(absoluteFilePath);
 
     await unlink(absoluteFilePath);
+  }
+
+  async os(arg) {
+    arg = arg.trim();
+
+    const prefix = arg.substring(0, 2);
+    const command = arg.substring(2, arg.length);
+
+    if (prefix !== "--") {
+      throw new Error("Argument specified incorrectly");
+    }
+
+    const printResult = (text) => {
+      printText(text, "yellow");
+    };
+
+    switch (command) {
+      case "EOL":
+        console.log("count: %d", EOL); // TODO
+        break;
+      case "cpus":
+        console.log(cpus());
+        break;
+      case "homedir":
+        printResult(homedir());
+        break;
+      case "username":
+        printResult(userInfo().username);
+        break;
+      case "architecture":
+        printResult(arch());
+        break;
+      default:
+        throw new Error("Command is not recognized");
+    }
+  }
+
+  async hash(absoluteOrRelativeFilePath) {
+    const absoluteFilePath = `${this.dir}${SEPARATOR}${absoluteOrRelativeFilePath}`;
+
+    const data = await readFile(absoluteFilePath);
+
+    const hashHex = crypto.createHash("sha256").update(data).digest("hex");
+
+    printText(hashHex, "yellow");
   }
 }

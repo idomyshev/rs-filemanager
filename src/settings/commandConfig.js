@@ -26,4 +26,10 @@ export const commandConfig = {
   rm: {
     argsNumber: 1,
   },
+  os: {
+    argsNumber: 1,
+  },
+  hash: {
+    argsNumber: 1,
+  },
 };
