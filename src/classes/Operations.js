@@ -1,5 +1,5 @@
 import { FileManager } from "./FileManager.js";
-import { open, stat, readdir, rename } from "fs/promises";
+import { open, stat, readdir, rename, unlink } from "fs/promises";
 import { createReadStream, createWriteStream } from "fs";
 import { SEPARATOR } from "../settings/filesystem.js";
 import { printTable } from "../utils/tables.js";
@@ -189,5 +189,13 @@ export class Operations extends FileManager {
       `${this.dir}/${sourceFilePath}`,
       `${this.dir}/${targetFilePath}`
     );
+  }
+
+  async rm(absoluteOrRelativeFilePath) {
+    // TODO Use method instead.
+    const absoluteFilePath = `${this.dir}${SEPARATOR}${absoluteOrRelativeFilePath}`;
+    console.log(absoluteFilePath);
+
+    await unlink(absoluteFilePath);
   }
 }

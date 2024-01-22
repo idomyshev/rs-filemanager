@@ -4,7 +4,7 @@
   "description": "File Manager with Node.js",
   "type": "module",
   "scripts": {
-    "start": "node src/parent.js"
+    "start": "node src/index.js"
   },
   "author": "Ilia Domyshev",
   "license": "ISC"

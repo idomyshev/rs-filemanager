@@ -23,4 +23,7 @@ export const commandConfig = {
   rn: {
     argsNumber: 2,
   },
+  rm: {
+    argsNumber: 1,
+  },
 };
