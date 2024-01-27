@@ -1,18 +1,18 @@
-import { FileManager } from "./FileManager.js";
-import { open, stat, readdir, rename, unlink, readFile } from "fs/promises";
-import { createReadStream, createWriteStream } from "fs";
-import { homedir, EOL, cpus, userInfo, arch } from "os";
+import {FileManager} from "./FileManager.js";
+import {open, stat, readdir, rename, unlink, readFile} from "fs/promises";
+import {createReadStream, createWriteStream} from "fs";
+import {homedir, EOL, cpus, userInfo, arch} from "os";
 import crypto from "crypto";
 
-import { SEPARATOR } from "../settings/filesystem.js";
-import { printTable } from "../utils/tables.js";
-import { tableColumns } from "../settings/table.js";
-import { colorizeText, printText } from "../utils/texts.js";
+import {SEPARATOR} from "../settings/filesystem.js";
+import {printTable} from "../utils/tables.js";
+import {tableColumns} from "../settings/table.js";
+import {colorizeText, printText} from "../utils/texts.js";
 
 export class Operations extends FileManager {
-  async cp(file1, file2) {
-    const sourceFilePath = `${this.dir}/${file1}`;
-    const targetFilePath = `${this.dir}/${file2}`;
+  async cp(filePath1, filePath2) {
+    const sourceFilePath = this.transformPath(filePath1);
+    const targetFilePath = this.transformPath(filePath2);
 
     await stat(sourceFilePath);
 
@@ -35,12 +35,12 @@ export class Operations extends FileManager {
     readStream.pipe(writeStream);
   }
 
-  async add(file1) {
-    const targetFilePath = `${this.dir}/${file1}`;
+  async add(filePath) {
+    const targetFilePath = this.transformPath(filePath);
 
     try {
       const file = await open(targetFilePath, "wx");
-      file.close();
+      await file.close();
     } catch (err) {
       throw new Error(`Cannot open file ${targetFilePath}`);
     }
@@ -75,20 +75,12 @@ export class Operations extends FileManager {
 
     pathSplit.pop();
     pathSplit.shift();
+
     this.dir = `${SEPARATOR}${pathSplit.join(SEPARATOR)}`;
   }
 
   async cd(path) {
-    // TODO Improve it: on Windows / and \ is possible, probably?
-    const isWindowsAbsolutePath =
-      path.search(/^[a-zA-Z]+:\\/g) > -1 && SEPARATOR !== "/";
-
-    const isLinuxAbsolutePath = SEPARATOR === "/" && path.startsWith(SEPARATOR);
-
-    // Add path to the current if path is not absolute.
-    if (!isLinuxAbsolutePath && !isWindowsAbsolutePath) {
-      path = `${this.dir}${SEPARATOR}${path}`;
-    }
+    path = this.transformPath(path);
 
     const res = await stat(path);
 
@@ -152,8 +144,8 @@ export class Operations extends FileManager {
     }
   }
 
-  async cat(file1) {
-    const sourceFilePath = `${this.dir}/${file1}`;
+  async cat(filePath) {
+    const sourceFilePath = this.transformPath(filePath);
 
     await stat(sourceFilePath);
 
@@ -171,14 +163,17 @@ export class Operations extends FileManager {
 
     const resultString = colorizeText(result.toString("utf8"), "yellow");
 
-    process.stdout.write(`\n${resultString}\n\n`);
+    process.stdout.write(`${EOL}${resultString}${EOL}${EOL}`);
   }
 
   async rn(sourceFilePath, targetFilePath) {
+    sourceFilePath = this.transformPath(sourceFilePath);
+    targetFilePath = this.transformPath(targetFilePath);
+
     let targetFileExist = false;
 
     try {
-      targetFileExist = await stat(`${this.dir}/${targetFilePath}`);
+      targetFileExist = await stat(targetFilePath);
       targetFileExist = true;
     } catch (err) {
       // It's correct that we do nothing here.
@@ -188,17 +183,13 @@ export class Operations extends FileManager {
       throw new Error("Target file already exists");
     }
 
-    await rename(
-      `${this.dir}/${sourceFilePath}`,
-      `${this.dir}/${targetFilePath}`
-    );
+    await rename(sourceFilePath, targetFilePath);
   }
 
-  async rm(absoluteOrRelativeFilePath) {
-    // TODO Use method instead.
-    const absoluteFilePath = `${this.dir}${SEPARATOR}${absoluteOrRelativeFilePath}`;
+  async rm(filePath) {
+    filePath = this.transformPath(filePath);
 
-    await unlink(absoluteFilePath);
+    await unlink(filePath);
   }
 
   async os(arg) {
@@ -236,10 +227,10 @@ export class Operations extends FileManager {
     }
   }
 
-  async hash(absoluteOrRelativeFilePath) {
-    const absoluteFilePath = `${this.dir}${SEPARATOR}${absoluteOrRelativeFilePath}`;
+  async hash(filePath) {
+    filePath = this.transformPath(filePath);
 
-    const data = await readFile(absoluteFilePath);
+    const data = await readFile(filePath);
 
     const hashHex = crypto.createHash("sha256").update(data).digest("hex");
 

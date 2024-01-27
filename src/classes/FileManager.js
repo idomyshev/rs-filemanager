@@ -1,7 +1,9 @@
-import { homedir } from "os";
-import { lang } from "../settings/lang.js";
-import { commandConfig } from "../settings/commandConfig.js";
-import { printText } from "../utils/texts.js";
+import {homedir, EOL} from "os";
+import {lang} from "../settings/lang.js";
+import {commandConfig} from "../settings/commandConfig.js";
+import {printText} from "../utils/texts.js";
+import {SEPARATOR} from "../settings/filesystem.js";
+import {isAbsolute} from "path";
 
 export class FileManager {
   dir;
@@ -35,13 +37,14 @@ export class FileManager {
 
     switch (commandName) {
       case ".exit":
+        this.printGoodbye();
         process.exit(0);
         break;
       default:
         try {
           await this[commandName](...args);
         } catch (err) {
-          // TODO Delete console.log.
+          // TODO Delete console.log before send the task to review.
           console.log(err);
           this.operationFailed();
         } finally {
@@ -55,7 +58,7 @@ export class FileManager {
   }
 
   printGoodbye() {
-    printText(`Thank you for using File Manager, ${this.username}, goodbye!\n`);
+    printText(`${EOL}Thank you for using File Manager, ${this.username}, goodbye!${EOL}`, "yellow");
   }
 
   invalidInput() {
@@ -66,4 +69,8 @@ export class FileManager {
   operationFailed() {
     printText(lang.operationFailed, "red");
   }
+
+  transformPath(filePath) {
+    return isAbsolute(filePath) ? filePath : `${this.dir}${SEPARATOR}${filePath}`
+  };
 }

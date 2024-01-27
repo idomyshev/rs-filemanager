@@ -1,7 +1,7 @@
-import { homedir } from "os";
-import { printText } from "./utils/texts.js";
-import { lang } from "./settings/lang.js";
-import { Operations } from "./classes/Operations.js";
+import {homedir, EOL} from "os";
+import {printText} from "./utils/texts.js";
+import {lang} from "./settings/lang.js";
+import {Operations} from "./classes/Operations.js";
 
 const operations = new Operations();
 
@@ -29,11 +29,16 @@ if (!userArg) {
   printText(lang.invalidInput, "red");
 } else {
   const username = userArg[1];
+  operations.username = username;
 
-  // TODO Try to not use child process
-  printText(`Welcome to the File Manager, ${username}!\n`, "yellow");
+  printText(`Welcome to the File Manager, ${username}!${EOL}`, "yellow");
 
   printText(`You are currently in ${homedir}`, "white");
 
   process.stdin.on("data", await onInputData);
+
+  process.on("SIGINT", function () {
+    operations.printGoodbye(username);
+    process.exit();
+  });
 }
