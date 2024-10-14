@@ -104,7 +104,11 @@ export class Operations extends FileManager {
       throw new Error("Given path is not a directory");
     }
 
-    this.dir = path.replace(/\/+$/g, "");
+    if (path === SEPARATOR) {
+      this.dir = path
+    } else {
+      this.dir = path.replace(/\/+$/g, "");
+    }
   }
 
   async ls() {

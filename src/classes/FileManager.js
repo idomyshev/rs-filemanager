@@ -45,7 +45,7 @@ export class FileManager {
           await this[commandName](...args);
         } catch (err) {
           // Uncomment only if needed during developing.
-          console.log(err);
+          // console.log(err);
           this.operationFailed();
         } finally {
           this.printDir();
@@ -71,6 +71,18 @@ export class FileManager {
   }
 
   transformPath(filePath) {
-    return isAbsolute(filePath) ? filePath : `${this.dir}${SEPARATOR}${filePath}`
+    if (filePath) {
+      filePath = filePath.trim();
+    }
+
+    if (isAbsolute(filePath)) {
+      return filePath;
+    } else {
+      if (this.dir.substring(this.dir.length - 1, this.dir.length) === SEPARATOR) {
+        return `${this.dir}${filePath}`;
+      } else {
+        return `${this.dir}${SEPARATOR}${filePath}`;
+      }
+    }
   };
 }
