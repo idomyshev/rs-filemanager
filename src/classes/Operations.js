@@ -10,13 +10,23 @@ import {tableColumns} from "../settings/table.js";
 import {colorizeText, printText} from "../utils/texts.js";
 
 export class Operations extends FileManager {
-  async cp(filePath1, filePath2) {
+  async cp(filePath1, targetDirPath) {
     const sourceFilePath = this.transformPath(filePath1);
-    const targetFilePath = this.transformPath(filePath2);
+    const targetFileDir = this.transformPath(targetDirPath);
+
+    const sourceFile = filePath1.split(SEPARATOR);
+    const sourceFileName = sourceFile[sourceFile.length - 1];
 
     await stat(sourceFilePath);
+    const targetDirStat = await stat(targetFileDir);
+
+    if (!targetDirStat.isDirectory()) {
+      throw new Error("Target is not a directory");
+    }
 
     let targetFileExist = false;
+
+    const targetFilePath = targetFileDir + SEPARATOR + sourceFileName;
 
     try {
       targetFileExist = await stat(targetFilePath);
@@ -208,7 +218,7 @@ export class Operations extends FileManager {
 
     switch (command) {
       case "EOL":
-        console.log("count: %d", EOL); // TODO
+        console.log(JSON.stringify(EOL));
         break;
       case "cpus":
         console.log(cpus());

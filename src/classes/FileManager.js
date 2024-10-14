@@ -45,7 +45,7 @@ export class FileManager {
           await this[commandName](...args);
         } catch (err) {
           // TODO Delete console.log before send the task to review.
-          console.log(err);
+          //console.log(err);
           this.operationFailed();
         } finally {
           this.printDir();
