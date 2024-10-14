@@ -45,7 +45,7 @@ export class FileManager {
           await this[commandName](...args);
         } catch (err) {
           // Uncomment only if needed during developing.
-          //console.log(err);
+          console.log(err);
           this.operationFailed();
         } finally {
           this.printDir();

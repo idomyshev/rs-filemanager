@@ -35,4 +35,10 @@ export const commandConfig = {
   hash: {
     argsNumber: 1,
   },
+  compress: {
+    argsNumber: 2,
+  },
+  decompress: {
+    argsNumber: 2,
+  },
 };

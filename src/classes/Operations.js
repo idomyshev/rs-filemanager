@@ -3,6 +3,7 @@ import {open, stat, readdir, rename, unlink, readFile} from "fs/promises";
 import {createReadStream, createWriteStream} from "fs";
 import {homedir, EOL, cpus, userInfo, arch} from "os";
 import crypto from "crypto";
+import { createBrotliCompress, createBrotliDecompress } from 'zlib';
 
 import {SEPARATOR} from "../settings/filesystem.js";
 import {printTable} from "../utils/tables.js";
@@ -250,5 +251,41 @@ export class Operations extends FileManager {
     const hashHex = crypto.createHash("sha256").update(data).digest("hex");
 
     printText(hashHex, "yellow");
+  }
+
+  async compress(filePath1, filePath2) {
+    const sourceFilePath = this.transformPath(filePath1);
+    const targetFilePath = this.transformPath(filePath2);
+
+    await stat(sourceFilePath);
+
+    const inputStream = createReadStream(sourceFilePath);
+    const outputStream = createWriteStream(targetFilePath);
+
+    const brotliStream = createBrotliCompress();
+
+    inputStream.pipe(brotliStream).pipe(outputStream);
+
+    outputStream.on('finish', () => {
+      console.log('Compression finished');
+    });
+  }
+
+  async decompress(filePath1, filePath2) {
+    const sourceFilePath = this.transformPath(filePath1);
+    const targetFilePath = this.transformPath(filePath2);
+
+    await stat(sourceFilePath);
+
+    const inputStream = createReadStream(sourceFilePath);
+    const outputStream = createWriteStream(targetFilePath);
+
+    const brotliStream = createBrotliDecompress();
+
+    inputStream.pipe(brotliStream).pipe(outputStream);
+
+    outputStream.on('finish', () => {
+      console.log('Decompression finished');
+    });
   }
 }
