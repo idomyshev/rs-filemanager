@@ -44,7 +44,7 @@ export class FileManager {
         try {
           await this[commandName](...args);
         } catch (err) {
-          // TODO Delete console.log before send the task to review.
+          // Uncomment only if needed during developing.
           //console.log(err);
           this.operationFailed();
         } finally {

@@ -45,6 +45,11 @@ export class Operations extends FileManager {
     readStream.pipe(writeStream);
   }
 
+  async mv(filePath1, targetDirPath) {
+    await this.cp(filePath1, targetDirPath);
+    setTimeout(() =>  this.rm(filePath1), 500);
+  }
+
   async add(filePath) {
     const targetFilePath = this.transformPath(filePath);
 

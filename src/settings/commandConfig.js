@@ -5,6 +5,9 @@ export const commandConfig = {
   cp: {
     argsNumber: 2,
   },
+  mv: {
+    argsNumber: 2,
+  },
   add: {
     argsNumber: 1,
   },
