@@ -269,10 +269,6 @@ export class Operations extends FileManager {
     const brotliStream = createBrotliCompress();
 
     inputStream.pipe(brotliStream).pipe(outputStream);
-
-    outputStream.on('finish', () => {
-      console.log('Compression finished');
-    });
   }
 
   async decompress(filePath1, filePath2) {
@@ -287,9 +283,5 @@ export class Operations extends FileManager {
     const brotliStream = createBrotliDecompress();
 
     inputStream.pipe(brotliStream).pipe(outputStream);
-
-    outputStream.on('finish', () => {
-      console.log('Decompression finished');
-    });
   }
 }
